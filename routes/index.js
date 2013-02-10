@@ -4,5 +4,7 @@
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'Express' });
+  console.log(req.user);
+  url = "";
+  res.render('index', {url:url, title: 'MyFacebookSpace' });
 };

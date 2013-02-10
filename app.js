@@ -44,8 +44,11 @@ function facebookGetUser() {
   }
 }
 
-app.get('/test', facebookGetUser(), function(req, res){
+app.get('/myspace', facebookGetUser(), function(req, res){
+    var data = Facebook.prototype.getPersistentData("userData");
+    console.log(data)
     res.send("hello there", req.user);
+    res.redirect('/');
 });
 
 app.get('/login', Facebook.loginRequired(), function (req, res) {
@@ -53,6 +56,8 @@ app.get('/login', Facebook.loginRequired(), function (req, res) {
     console.log("user", data);
     //res.writeHead(200, {'Content-Type': 'text/plain'});
     res.send(data);
+    Facebook.prototype.setPersistentData("userData", data);
+    res.redirect('/myspace'); 
   });
 });
 
