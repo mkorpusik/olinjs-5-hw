@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  script(src='/javascripts/fb.js')
+  //- script $(this).css('background-color', '#{loggedInUser.color}');
+
+  h1= title
+  //- script
+  //-   console.log('#{loggedInUser}')
+  img(src='#{loggedInUser.img_url}')
+
+  form(id='change_color', action='/color', method='post')
+    h3 Enter a new background color!
+    input(class="bkgd_color", name="color")
+    input(class="color_button", type="submit")
+
+  a(href="/logout", class="logout") Logout

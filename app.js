@@ -31,12 +31,17 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
+var models = require('./models');
+var User = models.User;
+
 function facebookGetUser() {
   return function(req, res, next) {
     req.facebook.getUser( function(err, user) {
       if (!user || err){
-        res.send("you need to login");
+        //res.send("you need to login");
+        res.render('login', {title:"Login"});
       } else {
+        console.log(user);
         req.user = user;
         next();
       }
@@ -44,30 +49,67 @@ function facebookGetUser() {
   }
 }
 
+/*
 app.get('/myspace', facebookGetUser(), function(req, res){
-    var data = Facebook.prototype.getPersistentData("userData");
-    console.log(data)
-    res.send("hello there", req.user);
-    res.redirect('/');
+    var user = req.session.user;
+    console.log(user);
+    //res.send("hello there", req.user);
+    res.redirect('/loggedIn');
 });
+*/
 
 app.get('/login', Facebook.loginRequired(), function (req, res) {
-  req.facebook.api('/me/picture?redirect=false&type=large', function(err, data) {
+  var fb_id = req.facebook.user;
+
+  req.facebook.api('/me', function(err, data) {
+    ///picture?redirect=false&type=large
     console.log("user", data);
-    //res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.send(data);
-    Facebook.prototype.setPersistentData("userData", data);
-    res.redirect('/myspace'); 
+    var image = "http://graph.facebook.com/" + data.username + "/picture?width=200&height=200";
+    //res.send(data);
+
+    var exists =  User.find({fb_id:fb_id}, function (err, docs) {
+      console.log(docs.length);
+
+      // user does not exist already
+      if (docs.length==0) {
+        var user = new User({ fb_id:fb_id, img_url: image, color: 'white'});
+        console.log("new user "+user);
+        user.save(function (err) {
+          if (err)
+            return console.log("error: couldn't save user");
+          req.session.user = user;
+          //console.log("session user "+req.session.user);
+          res.redirect('/');
+        });
+        //return;
+      }
+    
+      // login with sessions if user exists
+      else if (docs.length>0){
+        var user = docs;
+        console.log("existing user "+user);
+        req.session.user = user;
+        //console.log("session user "+req.session.user);
+        res.redirect('/');
+      }
+
+      if (err)
+        return console.log("error", exists);
+    });
+ 
   });
+  
 });
 
-app.get('/logout', facebookGetUser(), function(req, res){
+app.get('/logout', function(req, res){
   req.user = null;
   req.session.destroy();
+  console.log("logged out");
   res.redirect('/');
 });
 
-app.get('/', routes.index);
+app.get('/', facebookGetUser(), routes.index2);
+app.post('/color', routes.color);
 app.get('/users', user.list);
 
 http.createServer(app).listen(app.get('port'), function(){
