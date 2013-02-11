@@ -1,12 +1,11 @@
 extends layout
 
 block content
-  script(src='/javascripts/fb.js')
-  //- script $(this).css('background-color', '#{loggedInUser.color}');
+  script console.log('test');
+  script $(this).css('background-color', '#{loggedInUser.color}');
 
   h1= title
-  //- script
-  //-   console.log('#{loggedInUser}')
+  //- '#{loggedInUser.color}'
   img(src='#{loggedInUser.img_url}')
 
   form(id='change_color', action='/color', method='post')

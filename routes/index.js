@@ -14,14 +14,14 @@ exports.index = function(req, res){
 
 exports.index2 = function(req, res){
   console.log(util.inspect(req.session.user));
-  console.log("session user "+req.session.user);
+  console.log("session user ", req.session.user);
   //var img_url = req.session.user[0].img_url;
   //var color = req.session.user[0].color;
   id = req.session.user[0].fb_id;
-  var user = User.find({fb_id:id}, function (err, loggedInUser) {
+  var user = User.findOne({fb_id:id}, function (err, loggedInUser) {
     if (err)
         return console.log("error");
-    console.log("docs "+loggedInUser);
+    console.log("docs ", loggedInUser);
     //var color = loggedInUser.color;
     //var img_url = loggedInUser.img_url;
     //console.log(color);
