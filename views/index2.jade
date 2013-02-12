@@ -1,6 +1,7 @@
 extends layout
 
 block content
+  script $('.body').css('background-color', '#{loggedInUser.color}');
   h1= title
   //- '#{loggedInUser.color}'
   img(src='#{loggedInUser.img_url}')
